@@ -1,9 +1,54 @@
 package main
 
 import (
+	"api"
 	"fmt"
+	"log"
+	"net/http"
+	"router"
 )
 
 func main() {
-	fmt.Println("Test")
+	// API routing table
+	webRouter := &router.Router{make(map[string]map[string]router.HandlerFunc)}
+
+	// For test..
+	webRouter.HandleFunc("GET", "/users/:user_id/addresses/:address_id", func(c *router.Context) {
+		fmt.Fprintf(c.ResponseWriter, "Retrive user's address\nuser:%s\naddress:%s\n", c.Params["user_id"], c.Params["address_id"])
+	})
+
+	// Sign-up
+	webRouter.HandleFunc("POST", "/user", api.SignUp)
+	// Sign-in
+	webRouter.HandleFunc("POST", "/user/:user_id", api.SignIn)
+
+	// Add user ether wallet
+	webRouter.HandleFunc("GET", "/addWallet/:user_id", api.JWTauth(api.AddWallet))
+
+	// GET user wallet meta info
+	//webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.WalletInfo))
+
+	// POST token (user -> user)
+	//webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
+
+	// GET contract
+	webRouter.HandleFunc("GET", "/contract", api.JWTauth(api.ReadContract))
+
+	// POST contract
+	webRouter.HandleFunc("POST", "/contract", api.JWTauth(api.WriteContract))
+
+	// Refresh JWT Toekn
+	webRouter.HandleFunc("GET", "/token", api.Refresh)
+
+	/*
+		// HTTPS
+		log.Fatal(http.ListenAndServeTLS(":443",
+			"/etc/letsencrypt/live/appserver.acewallet.net/fullchain.pem",
+			"/etc/letsencrypt/live/appserver.acewallet.net/privkey.pem",
+			webRouter))
+
+	*/
+
+	// HTTP
+	log.Fatal(http.ListenAndServe(":8080", webRouter))
 }
