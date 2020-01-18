@@ -71,16 +71,18 @@ func (myContract *MyContract) GetNonce(ownerPrivKey string) uint64 {
 func (myTransaction *Transaction) SetTransaction(value uint, ownerPrivKey string, nonce uint64) {
 	// Set transaction subject
 	myTransaction.SenderKey = ownerPrivKey
-	ownerPubKey, err := crypto.HexToECDSA(myTransaction.SenderKey)
+	privKey, err := crypto.HexToECDSA(myTransaction.SenderKey)
 	if err != nil {
 		fmt.Println("userKey converting error")
 	}
 
-	myTransaction.Auth = bind.NewKeyedTransactor(ownerPubKey)
+	myTransaction.Auth = bind.NewKeyedTransactor(privKey)
 	myTransaction.Auth.GasLimit = uint64(350000)
-	myTransaction.Auth.GasPrice = big.NewInt(40000000000)
-	myTransaction.Auth.Value = big.NewInt(int64(value))
+	//myTransaction.Auth.GasPrice = big.NewInt(40000000000)
+	myTransaction.Auth.Value = big.NewInt(0)
 	myTransaction.Auth.Nonce = big.NewInt(int64(nonce))
+
+	myTransaction.Value = big.NewInt(int64(value))
 }
 
 func Call(myContract MyContract) string {
@@ -94,6 +96,13 @@ func Call(myContract MyContract) string {
 }
 
 func Send(transaction Transaction, myContract MyContract) string {
+	gasPrice, err := myContract.EthClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	transaction.Auth.GasPrice = gasPrice
+
 	tx, err := myContract.ContractInstance.Set(transaction.Auth, transaction.Value)
 	if err != nil {
 		log.Fatal(err)

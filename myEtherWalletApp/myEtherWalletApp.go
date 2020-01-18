@@ -25,17 +25,15 @@ func main() {
 	// Add user ether wallet
 	webRouter.HandleFunc("GET", "/addWallet/:user_id", api.JWTauth(api.AddWallet))
 
-	// GET user wallet meta info
-	//webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.WalletInfo))
-
-	// POST token (user -> user)
-	//webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
-
-	// GET contract
+	// Read contract
 	webRouter.HandleFunc("GET", "/contract", api.JWTauth(api.ReadContract))
+	// For test without JWT
+	//webRouter.HandleFunc("GET", "/contract", api.ReadContract)
 
-	// POST contract
+	// Write contract
 	webRouter.HandleFunc("POST", "/contract", api.JWTauth(api.WriteContract))
+	// For test without JWT
+	//webRouter.HandleFunc("POST", "/contract", api.WriteContract)
 
 	// Refresh JWT Toekn
 	webRouter.HandleFunc("GET", "/token", api.Refresh)
@@ -48,6 +46,12 @@ func main() {
 			webRouter))
 
 	*/
+
+	// GET user wallet meta info
+	//webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.WalletInfo))
+
+	// POST token (user -> user)
+	//webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
 
 	// HTTP
 	log.Fatal(http.ListenAndServe(":8080", webRouter))
