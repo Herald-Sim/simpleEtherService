@@ -38,14 +38,11 @@ func main() {
 	// Refresh JWT Toekn
 	webRouter.HandleFunc("GET", "/token", api.Refresh)
 
-	/*
-		// HTTPS
-		log.Fatal(http.ListenAndServeTLS(":443",
-			"/etc/letsencrypt/live/appserver.acewallet.net/fullchain.pem",
-			"/etc/letsencrypt/live/appserver.acewallet.net/privkey.pem",
-			webRouter))
-
-	*/
+	// HTTPS
+	log.Fatal(http.ListenAndServeTLS(":443",
+		"/etc/letsencrypt/live/neocool.iptime.org/fullchain.pem",
+		"/etc/letsencrypt/live/neocool.iptime.org/privkey.pem",
+		webRouter))
 
 	// GET user wallet meta info
 	//webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.WalletInfo))
@@ -54,5 +51,5 @@ func main() {
 	//webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
 
 	// HTTP
-	log.Fatal(http.ListenAndServe(":8080", webRouter))
+	//log.Fatal(http.ListenAndServe(":8080", webRouter))
 }
