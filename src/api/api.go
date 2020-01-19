@@ -475,12 +475,12 @@ func GetWalletInfo(c *router.Context) {
 	walletAddress := c.Params["walletAddress"].(string)
 
 	// Make faster using go-rutine
-	etherBalance := eth.GetBalacnce(walletAddress)
-	ercBalance := erctoken.GetBalacnce(MyToken, walletAddress)
+	etherBalance, _ := strconv.ParseFloat(fmt.Sprint(eth.GetBalacnce(walletAddress)), 32)
+	ercBalance, _ := strconv.ParseFloat(fmt.Sprint(erctoken.GetBalacnce(MyToken, walletAddress)), 32)
 	ercHistroy := erctoken.GetRecentHistory(walletAddress)
 
-	metaData.ETHbalance = etherBalance.String()
-	metaData.HRTbalance = ercBalance.String()
+	metaData.ETHbalance = fmt.Sprintf("%f", etherBalance)
+	metaData.HRTbalance = fmt.Sprintf("%f", ercBalance)
 	metaData.WalletHistroy = ercHistroy
 
 	jsonData, _ := json.Marshal(metaData)
@@ -494,7 +494,7 @@ func TransferToken(c *router.Context) {
 	var ownerPrivKey string
 
 	recvData, _ := ioutil.ReadAll(c.Request.Body)
-	json.Unmarshal(recvData, transferReq)
+	json.Unmarshal(recvData, &transferReq)
 
 	ercBalance, _ := strconv.ParseFloat(fmt.Sprint(erctoken.GetBalacnce(MyToken, transferReq.FromWallet)), 32)
 	quantity, _ := strconv.ParseFloat(transferReq.Quantity, 32)
