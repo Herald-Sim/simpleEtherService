@@ -1,0 +1,2 @@
+[For ARM architecture]
+GOOS=linux GOARCH=arm GOARM=5 go build -o ARM_myEtherWalletApp myEtherWalletApp.go

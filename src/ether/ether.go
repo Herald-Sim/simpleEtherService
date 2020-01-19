@@ -62,7 +62,7 @@ func GetBalacnce(walletAddress string) *big.Float {
 
 	convert := big.NewFloat(0.000000000000000001)
 
-	resp, err := http.Get("https://api.etherscan.io/api?module=account&action=balance&address=" + walletAddress + "&tag=latest&apikey=PJC7PSH73MEI5J5AD8URMAVFB1G2FMGHYJ")
+	resp, err := http.Get("https://api-ropsten.etherscan.io/api?module=account&action=balance&address=" + walletAddress + "&tag=latest&apikey=PJC7PSH73MEI5J5AD8URMAVFB1G2FMGHYJ")
 	if err != nil {
 		panic(err)
 	}
