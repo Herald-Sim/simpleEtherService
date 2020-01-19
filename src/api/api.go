@@ -7,6 +7,7 @@ import (
 	"driver"
 	"encoding/json"
 	"erctoken"
+	"eth"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -466,4 +467,63 @@ func WriteContract(c *router.Context) {
 
 	txResult := contract.Send(transaction, MyContract)
 	c.ResponseWriter.Write([]byte(txResult))
+}
+
+func GetWalletInfo(c *router.Context) {
+	var metaData appcontext.WalletMetaData
+
+	walletAddress := c.Params["walletAddress"].(string)
+
+	// Make faster using go-rutine
+	etherBalance := eth.GetBalacnce(walletAddress)
+	ercBalance := erctoken.GetBalacnce(MyToken, walletAddress)
+	ercHistroy := erctoken.GetRecentHistory(walletAddress)
+
+	metaData.ETHbalance = etherBalance.String()
+	metaData.HRTbalance = ercBalance.String()
+	metaData.WalletHistroy = ercHistroy
+
+	jsonData, _ := json.Marshal(metaData)
+
+	c.ResponseWriter.Write(jsonData)
+	c.ResponseWriter.WriteHeader(200)
+}
+
+func TransferToken(c *router.Context) {
+	var transferReq appcontext.Transfer
+	var ownerPrivKey string
+
+	recvData, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(recvData, transferReq)
+
+	ercBalance, _ := strconv.ParseFloat(fmt.Sprint(erctoken.GetBalacnce(MyToken, transferReq.FromWallet)), 32)
+	quantity, _ := strconv.ParseFloat(transferReq.Quantity, 32)
+
+	if ercBalance > quantity {
+		fmt.Println("Can send token!")
+
+		sqlQuery := "select privKey from myEtherWallet.wallet where pubKey =  " + "'" + transferReq.FromWallet + "'" + ";"
+		rows, err := MySQL.SQLClient.Query(sqlQuery)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			err := rows.Scan(&ownerPrivKey)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		transcation := erctoken.Transaction{}
+		transcation.SetTransaction(transferReq.ToWallet, quantity, ownerPrivKey)
+
+		txResult := erctoken.TransferToken(transcation, MyToken)
+
+		c.ResponseWriter.Write([]byte(txResult))
+		c.ResponseWriter.WriteHeader(200)
+	}
+	fmt.Println("Not enough HRT")
+	c.ResponseWriter.WriteHeader(500)
 }

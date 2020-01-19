@@ -46,13 +46,13 @@ type Wallets struct {
 	List []Wallet
 }
 
-type Transfer struct {
-	WalletAddress string
-	Token         string
-	Quantity      string
-}
-
 type ContractReq struct {
 	WalletAddress string
 	Value         string
+}
+
+type Transfer struct {
+	ToWallet   string
+	FromWallet string
+	Quantity   string
 }

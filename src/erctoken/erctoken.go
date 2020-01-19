@@ -1,9 +1,3 @@
-// EhtherScanAPI: PJC7PSH73MEI5J5AD8URMAVFB1G2FMGHYJ
-/*ToDo
-1. GetBalance 단위 수정
-2. 최근 거래내역 추적 추가
-*/
-
 package erctoken
 
 import (

@@ -45,10 +45,10 @@ func main() {
 		webRouter))
 
 	// GET user wallet meta info
-	//webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.WalletInfo))
+	webRouter.HandleFunc("GET", "/wallet/:walletAddress", api.JWTauth(api.GetWalletInfo))
 
 	// POST token (user -> user)
-	//webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
+	webRouter.HandleFunc("POST", "/HRToken", api.JWTauth(api.TransferToken))
 
 	// HTTP
 	//log.Fatal(http.ListenAndServe(":8080", webRouter))
